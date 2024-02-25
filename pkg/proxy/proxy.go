@@ -26,6 +26,10 @@ type Proxy struct {
 	TLSClientConfig *tls.Config
 }
 
+func (p *Proxy) StartProxy(addr string) error {
+	return http.ListenAndServe(addr, p)
+}
+
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "CONNECT" {
 		p.serveConnect(w, r)

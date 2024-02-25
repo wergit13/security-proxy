@@ -83,7 +83,7 @@ func (p *httpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	log.Println(r.RemoteAddr, " ", resp.Status)
+	log.Println(outr.Method, outr.Host, "\t", resp.Status)
 
 	removeHopByHopHeaders(resp.Header)
 
