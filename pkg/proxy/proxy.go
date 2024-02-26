@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sc-proxy/pkg/service"
 	"sync"
 )
 
@@ -24,6 +25,8 @@ type Proxy struct {
 	// TLSClientConfig specifies the tls.Config to use when establishing
 	// an upstream connection for proxying.
 	TLSClientConfig *tls.Config
+
+	Service *service.Service
 }
 
 func (p *Proxy) StartProxy(addr string) error {
@@ -37,6 +40,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	rp := &httpProxy{
 		Director: httpDirector,
+		Service:  p.Service,
 	}
 	rp.ServeHTTP(w, r)
 }
@@ -96,6 +100,7 @@ func (p *Proxy) serveConnect(w http.ResponseWriter, r *http.Request) {
 	rp := &httpProxy{
 		Director:  httpsDirector,
 		Transport: &http.Transport{DialTLS: od.Dial},
+		Service:   p.Service,
 	}
 
 	ch := make(chan int)

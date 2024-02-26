@@ -2,5 +2,5 @@ package models
 
 type RequestResponce struct {
 	Request  Request
-	Responce Responce
+	Responce *Responce
 }

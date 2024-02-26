@@ -23,12 +23,16 @@ func (s *Service) SavePair(ctx context.Context, rq *http.Request, rp *http.Respo
 	if err != nil {
 		return err
 	}
-	responce, err := responceToJson(rp)
-	if err != nil {
-		return err
+	var responce *[]byte
+	if rp != nil {
+		resp, err := responceToJson(rp)
+		if err != nil {
+			return err
+		}
+		responce = &resp
 	}
 
-	_, err = s.Repository.Save(ctx, request, responce)
+	_, err = s.Repository.Save(ctx, &request, responce)
 	return err
 }
 

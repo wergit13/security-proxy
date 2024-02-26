@@ -21,7 +21,7 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db}
 }
 
-func (r *Repository) Save(ctx context.Context, req []byte, resp []byte) (int, error) {
+func (r *Repository) Save(ctx context.Context, req *[]byte, resp *[]byte) (int, error) {
 	var id int
 
 	query, args, err := psql.Insert(Table).
@@ -93,18 +93,9 @@ func (r *Repository) GetAllPairs(ctx context.Context) ([]models.RequestResponce,
 
 	var requests []models.RequestResponce
 	for rows.Next() {
-		var request models.Request
-		var responce models.Responce
-		var dataReq string
-		var dataResp string
-		var id int
-		err = rows.Scan(&id, &dataReq, &dataResp)
-		dataReq = strings.ReplaceAll(dataReq, "\\", "")
-		dataResp = strings.ReplaceAll(dataResp, "\\", "")
-		err = json.Unmarshal([]byte(dataReq), &request)
-		err = json.Unmarshal([]byte(dataResp), &responce)
-		request.Id = id
-		requests = append(requests, models.RequestResponce{Request: request, Responce: responce})
+		var pair models.RequestResponce
+		pair, err = scanPair(rows)
+		requests = append(requests, pair)
 	}
 	if err != nil {
 		return nil, err
@@ -168,15 +159,26 @@ func scanRequest(row pgx.Row) (models.Request, error) {
 
 func scanPair(row pgx.Row) (models.RequestResponce, error) {
 	var request models.Request
-	var responce models.Responce
+	var responce *models.Responce = nil
 	var dataReq string
-	var dataResp string
+	var dataResp *string
 	var id int
 	err := row.Scan(&id, &dataReq, &dataResp)
+	if err != nil {
+		return models.RequestResponce{}, err
+	}
+
 	dataReq = strings.ReplaceAll(dataReq, "\\", "")
-	dataResp = strings.ReplaceAll(dataResp, "\\", "")
 	err = json.Unmarshal([]byte(dataReq), &request)
-	err = json.Unmarshal([]byte(dataResp), &responce)
+	if err != nil {
+		return models.RequestResponce{}, err
+	}
+
+	if dataResp != nil {
+		resnNoEscape := strings.ReplaceAll(*dataResp, "\\", "")
+		err = json.Unmarshal([]byte(resnNoEscape), responce)
+	}
+
 	request.Id = id
 	return models.RequestResponce{Request: request, Responce: responce}, err
 }

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  proxy:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: ./sc-proxy
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8000:8000"
+    depends_on:
+      - db_proxy
+    environment:
+      - DB_PASSWORD=1474
+
+  db_proxy:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+      - ./db/000001_init.up.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=1474
+    ports:
+      - "5432:5432"

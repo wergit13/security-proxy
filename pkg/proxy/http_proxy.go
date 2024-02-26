@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/textproto"
+	"sc-proxy/pkg/service"
 	"strings"
 )
 
@@ -23,6 +24,7 @@ var hopHeaders = []string{
 type httpProxy struct {
 	Director  func(*http.Request)
 	Transport http.RoundTripper
+	Service   *service.Service
 }
 
 func httpDirector(r *http.Request) {
@@ -78,11 +80,11 @@ func (p *httpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := transport.RoundTrip(outr)
 	if err != nil {
+		p.Service.SavePair(ctx, outr, nil)
 		http.Error(w, "Error sending proxy request", http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
-
 	log.Println(outr.Method, outr.Host, "\t", resp.Status)
 
 	removeHopByHopHeaders(resp.Header)
@@ -94,5 +96,9 @@ func (p *httpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(resp.StatusCode)
-	io.Copy(w, resp.Body)
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		log.Println("ERROR: ", err)
+	}
+	p.Service.SavePair(ctx, outr, resp)
 }
