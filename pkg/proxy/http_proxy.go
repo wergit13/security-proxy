@@ -84,9 +84,15 @@ func (p *httpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	outr.Body.Close()
+	if len(rqBodyBytes) != 0 {
+		outr.Body = io.NopCloser(bytes.NewBuffer(rqBodyBytes))
+	} else {
+		outr.Body = http.NoBody
+	}
 
 	resp, err := transport.RoundTrip(outr)
 	if err != nil {
+		log.Println("ERROR", outr.Method, outr.Host, "\t", err)
 		if len(rqBodyBytes) != 0 {
 			outr.Body = io.NopCloser(bytes.NewBuffer(rqBodyBytes))
 		} else {

@@ -18,15 +18,15 @@ import (
 const (
 	apiAddr   = ":8000"
 	proxyAddr = ":8080"
-	//certsDir  = "certs"
-	certsDir = "../../certs"
+	certsDir  = "certs"
+	//certsDir = "../../certs"
 )
 
 func main() {
 	ctx := context.Background()
 
 	db, err := repository.NewPostgresDB(ctx, repository.PostgresConfig{
-		Host:     "localhost",
+		Host:     "db_proxy",
 		Port:     "5432",
 		Username: "postgres",
 		DBName:   "postgres",
