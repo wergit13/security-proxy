@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"log"
@@ -77,14 +78,27 @@ func (p *httpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	outr := r.Clone(ctx)
 	p.Director(outr)
 	removeHopByHopHeaders(outr.Header)
+	rqBodyBytes, err := io.ReadAll(outr.Body)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
+	outr.Body.Close()
 
 	resp, err := transport.RoundTrip(outr)
 	if err != nil {
+		if len(rqBodyBytes) != 0 {
+			outr.Body = io.NopCloser(bytes.NewBuffer(rqBodyBytes))
+		} else {
+			outr.Body = http.NoBody
+		}
 		p.Service.SavePair(ctx, outr, nil)
 		http.Error(w, "Error sending proxy request", http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
+	outr.Body = io.NopCloser(bytes.NewBuffer(rqBodyBytes))
+	p.Service.SavePair(ctx, outr, resp)
 	log.Println(outr.Method, outr.Host, "\t", resp.Status)
 
 	removeHopByHopHeaders(resp.Header)
@@ -100,5 +114,4 @@ func (p *httpProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("ERROR: ", err)
 	}
-	p.Service.SavePair(ctx, outr, resp)
 }

@@ -1,6 +1,6 @@
 CREATE TABLE "request_responce"
 (
     id              SERIAL PRIMARY KEY,
-    request          JSON
+    request          JSON,
     responce        JSON
 );

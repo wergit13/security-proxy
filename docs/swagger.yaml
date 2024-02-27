@@ -1,0 +1,150 @@
+definitions:
+  handlers.ClientResponseDto:
+    properties:
+      message:
+        type: string
+      payload: {}
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/pair/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: pair
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: get request with responce by id
+      tags:
+      - pair
+  /api/v1/pairs:
+    get:
+      consumes:
+      - application/json
+      operationId: pairs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: get all requests with responces
+      tags:
+      - pairs
+  /api/v1/repeat/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: repeat
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: get repeat request by id
+      tags:
+      - repeat
+  /api/v1/request/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: request
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: get request by id
+      tags:
+      - request
+  /api/v1/requests:
+    get:
+      consumes:
+      - application/json
+      operationId: requests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: get all requests
+      tags:
+      - requests
+swagger: "2.0"

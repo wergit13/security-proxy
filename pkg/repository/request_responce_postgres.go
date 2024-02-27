@@ -151,7 +151,6 @@ func scanRequest(row pgx.Row) (models.Request, error) {
 	if err := row.Scan(&id, &data); err != nil {
 		return models.Request{}, err
 	}
-	data = strings.ReplaceAll(data, "\\", "")
 	err := json.Unmarshal([]byte(data), &request)
 	request.Id = id
 	return request, err
@@ -168,15 +167,14 @@ func scanPair(row pgx.Row) (models.RequestResponce, error) {
 		return models.RequestResponce{}, err
 	}
 
-	dataReq = strings.ReplaceAll(dataReq, "\\", "")
 	err = json.Unmarshal([]byte(dataReq), &request)
 	if err != nil {
 		return models.RequestResponce{}, err
 	}
 
 	if dataResp != nil {
-		resnNoEscape := strings.ReplaceAll(*dataResp, "\\", "")
-		err = json.Unmarshal([]byte(resnNoEscape), responce)
+		dataQuoted := strings.ReplaceAll(*dataResp, `\u`, `\\u`)
+		err = json.Unmarshal([]byte(dataQuoted), &responce)
 	}
 
 	request.Id = id

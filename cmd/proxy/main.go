@@ -5,9 +5,14 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"log"
+	"os"
+	"os/signal"
+	"sc-proxy/pkg/api"
+	"sc-proxy/pkg/api/handlers"
 	"sc-proxy/pkg/proxy"
 	"sc-proxy/pkg/repository"
 	"sc-proxy/pkg/service"
+	"syscall"
 )
 
 const (
@@ -34,6 +39,7 @@ func main() {
 
 	repos := repository.NewRepository(db)
 	service := service.NewService(repos)
+	handlers := handlers.NewHandler(service)
 
 	ca, _ := tls.LoadX509KeyPair(certsDir+"/ca.crt", certsDir+"/ca.key")
 	ca.Leaf, _ = x509.ParseCertificate(ca.Certificate[0])
@@ -48,5 +54,27 @@ func main() {
 		},
 		Service: service,
 	}
-	proxy.StartProxy(proxyAddr)
+
+	go func() {
+		err = proxy.StartProxy(proxyAddr)
+		if err != nil {
+			log.Fatal("error when starting the proxy server")
+		}
+	}()
+
+	srv := new(api.Server)
+
+	go func() {
+		if err = srv.Serve("8000", handlers.InitRoutes()); err != nil {
+			log.Fatal("error occurred on server shutting down")
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	if err = srv.Shutdown(context.Background()); err != nil {
+		log.Fatal("error occured on server shutting down")
+	}
 }

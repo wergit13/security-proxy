@@ -5,6 +5,7 @@ type Request struct {
 	Method     string
 	Url        string
 	Host       string
+	Scheme     string
 	Headers    map[string][]string
 	Cookies    map[string]string
 	GetParams  map[string][]string
