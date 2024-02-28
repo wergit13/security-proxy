@@ -144,6 +144,12 @@ func (r *Repository) GetRequestById(ctx context.Context, id int) (models.Request
 	return request, err
 }
 
+func (r *Repository) ClearBase(ctx context.Context) error {
+	query := "DELETE FROM " + Table
+	_, err := r.db.Query(ctx, query)
+	return err
+}
+
 func scanRequest(row pgx.Row) (models.Request, error) {
 	var request models.Request
 	var data string

@@ -10,6 +10,33 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/clear:
+    get:
+      consumes:
+      - application/json
+      operationId: clear
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: clears base of requests
+      tags:
+      - clear
   /api/v1/pair/{id}:
     get:
       consumes:
@@ -147,4 +174,37 @@ paths:
       summary: get all requests
       tags:
       - requests
+  /api/v1/scan/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: scan
+      parameters:
+      - description: request id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ClientResponseDto'
+      summary: scan on sql injection
+      tags:
+      - scan
 swagger: "2.0"

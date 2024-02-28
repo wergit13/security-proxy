@@ -19,7 +19,6 @@ const (
 	apiAddr   = ":8000"
 	proxyAddr = ":8080"
 	certsDir  = "certs"
-	//certsDir = "../../certs"
 )
 
 func main() {
