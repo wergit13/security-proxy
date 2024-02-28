@@ -15,4 +15,4 @@ docker-compose up --build
 ## Api
 Прокси находится на `localhost:8080`
 
-Апи можно потрогать из сваггера[http://localhost:8000/swagger/index.html#]
+Апи можно потрогать из [сваггера](http://localhost:8000/swagger/index.html#)
